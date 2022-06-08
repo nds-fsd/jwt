@@ -7,6 +7,11 @@ router.get("/:id", async (req, res, next) => {
   res.json(user);
 });
 
+router.get("/", async (req, res, next) => {
+  const user = await UserService.find();
+  res.json(user);
+});
+
 router.post("/", async (req, res, next) => {
   const document = req.body;
   const user = await UserService.create(document);

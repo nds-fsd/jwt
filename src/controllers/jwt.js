@@ -3,6 +3,7 @@ const jwtMiddleware = require("express-jwt");
 const express = require("express");
 const jwtSecret = process.env.JWT_SECRET;
 const UserService = require("../services/UserService");
+var bcrypt = require('bcryptjs');
 
 const authRouter = express.Router();
 
@@ -10,14 +11,15 @@ authRouter.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   await UserService.findOne({ email })
-    .then((user) => {
+    .then(async (user) => {
       if (!user)
         return res
           .status(400)
           .json({ error: { email: "This email is not registered" } });
 
       //valida password
-      if (!user.comparePassword(password))
+      const correctPassword = await user.comparePassword(password);
+      if (!correctPassword)
         return res.status(400).json({ error: { password: "Wrong password" } });
 
       // Login realizado, generamos token y lo mandamos
@@ -44,7 +46,11 @@ authRouter.post("/register", async (req, res) => {
           .json({ error: { email: "This email is already registered." } });
 
       // Creamos y mandamos el resultado
-      UserService.create(req.body)
+      const salt = bcrypt.genSaltSync(10);
+      UserService.create({
+        ...req.body,
+        password: bcrypt.hashSync(req.body.password, salt)
+      })
         .then((user) => {
           res.status(200).json({
             token: user.generateJWT(),

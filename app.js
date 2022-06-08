@@ -1,8 +1,8 @@
 const express = require('express');
-const { authRouter, configSecurity } = require('./src/routes/jwt');
-const users = require('./src/routes/users');
+const { authRouter, configSecurity } = require('./src/controllers/jwt');
+const users = require('./src/controllers/users');
 const app = express();
-const port = 8080;
+const port = 3001;
 
 app.use(express.json());
 configSecurity(app);

@@ -19,6 +19,10 @@ const findOne = async (email) => {
     return await User.findOne(email);
   };
 
+const find = async (query) => {
+  return await User.find(query);
+};
+
 const remove = async (id) => {
   const result = await User.findByIdAndDelete(id);
   return result !== null;
@@ -28,6 +32,7 @@ module.exports = {
   create,
   read,
   findOne,
+  find,
   update,
   remove,
 };
